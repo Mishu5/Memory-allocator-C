@@ -123,79 +123,7 @@ void *heap_malloc(size_t size) {
                 return (char *) temp + sizeof(struct memory_chunk_t) + 2;
             }
         }
-/*
-        size_t memory_between =
-                (char *) temp->next - (char *) temp - sizeof(struct memory_chunk_t) - temp->size - 4;
 
-        if (memory_between >= size + sizeof(struct memory_chunk_t) + 4 && temp->free == 0 && temp->next->free == 0) {
-
-            memory = (char *) temp + sizeof(struct memory_chunk_t) + temp->size + 4;
-            struct memory_chunk_t *new_block = (struct memory_chunk_t *) memory;
-            temp->next->prev = new_block;
-            new_block->next = temp->next;
-            new_block->prev = temp;
-            temp->next = new_block;
-            new_block->free = 0;
-            new_block->size = size;
-            memory = (char *) new_block + sizeof(struct memory_chunk_t);
-            for (int i = 0; i < 2; ++i) {
-                *memory = '#';
-                ++memory;
-            }
-            memory += new_block->size;
-            for (int i = 0; i < 2; ++i) {
-                *memory = '#';
-                ++memory;
-            }
-            temp3 = memory_manager.first_memory_chunk;
-            while (1) {
-
-                temp3->check_sum = get_check_sum((char *) temp3 + sizeof(struct memory_chunk_t) + 2);
-
-                temp3 = temp3->next;
-                if (temp3 == NULL) {
-                    break;
-                }
-            }
-            return (char *) temp + sizeof(struct memory_chunk_t) + 2;
-
-        }
-        if (memory_between + temp->next->size + 4 >= size && temp->free == 0 && temp->next->free == 1) {
-
-            memory = (char *) temp + sizeof(struct memory_chunk_t) + temp->size + 4;
-            struct memory_chunk_t *new_chunk = (struct memory_chunk_t *) memory;
-            new_chunk->next = temp->next->next;
-            new_chunk->prev = temp;
-            new_chunk->free = 0;
-            new_chunk->size = size;
-            if (temp->next->next != NULL)
-                temp->next->next->prev = new_chunk;
-            temp->next = new_chunk;
-
-            memory = (char *) new_chunk + sizeof(struct memory_chunk_t);
-            for (int i = 0; i < 2; ++i) {
-                *memory = '#';
-                ++memory;
-            }
-            memory += new_chunk->size;
-            for (int i = 0; i < 2; ++i) {
-                *memory = '#';
-                ++memory;
-            }
-            temp3 = memory_manager.first_memory_chunk;
-            while (1) {
-
-                temp3->check_sum = get_check_sum((char *) temp3 + sizeof(struct memory_chunk_t) + 2);
-
-                temp3 = temp3->next;
-                if (temp3 == NULL) {
-                    break;
-                }
-            }
-
-            return (char *) new_chunk + sizeof(struct memory_chunk_t) + 2;
-        }
-*/
         temp = temp->next;
     }
 
@@ -480,28 +408,6 @@ void heap_free(void *memblock) {
     }
 
     struct memory_chunk_t *temp = (struct memory_chunk_t *) ((char *) memblock - sizeof(struct memory_chunk_t) - 2);
-/*
-    //checking if good address
-    int correct_address_flag = 0;
-    struct memory_chunk_t *checker = memory_manager.first_memory_chunk;
-    while (1) {
-
-        if (temp->next == checker->next && temp->prev == checker->prev && temp->size == checker->size &&
-            temp->free == checker->free) {
-            correct_address_flag = 1;
-            break;
-        }
-
-        checker = checker->next;
-        if (checker == NULL) {
-            break;
-        }
-    }
-
-    if (correct_address_flag == 0) {
-        return;
-    }
-*/
     temp->free = 1;
 
     //concatenation with neighbours
@@ -606,12 +512,7 @@ enum pointer_type_t get_pointer_type(const void *const pointer) {
     if (memory_manager.first_memory_chunk == NULL) {
         return pointer_unallocated;
     }
-/*
-    if ((char *) pointer - sizeof(struct memory_chunk_t) - 2 < (char *) memory_manager.first_memory_chunk ||
-        (char *) pointer > (char *) memory_manager.first_memory_chunk + memory_manager.memory_size) {
-        return pointer_unallocated;
-    }
-*/
+
     struct memory_chunk_t *temp = (struct memory_chunk_t *) ((char *) pointer - sizeof(struct memory_chunk_t) - 2);
 
     struct memory_chunk_t *checker = memory_manager.first_memory_chunk;
